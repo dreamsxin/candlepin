@@ -19,6 +19,7 @@ import org.candlepin.dto.rules.v1.ConsumerDTO;
 import org.candlepin.dto.rules.v1.EntitlementDTO;
 import org.candlepin.dto.rules.v1.PoolDTO;
 import org.candlepin.model.Consumer;
+import org.candlepin.model.ConsumerTypeCurator;
 import org.candlepin.model.Entitlement;
 import org.candlepin.model.Pool;
 import org.candlepin.policy.js.JsRunner;
@@ -49,12 +50,16 @@ public class QuantityRules {
     private RulesObjectMapper mapper;
     private static Logger log = LoggerFactory.getLogger(QuantityRules.class);
     private ModelTranslator translator;
+    private ConsumerTypeCurator consumerTypeCurator;
 
     @Inject
-    public QuantityRules(JsRunner jsRules, RulesObjectMapper mapper, ModelTranslator translator) {
+    public QuantityRules(JsRunner jsRules, RulesObjectMapper mapper, ModelTranslator translator,
+        ConsumerTypeCurator consumerTypeCurator) {
+
         this.jsRules = jsRules;
         this.mapper = mapper;
         this.translator = translator;
+        this.consumerTypeCurator = consumerTypeCurator;
 
         jsRules.init("quantity_name_space");
     }

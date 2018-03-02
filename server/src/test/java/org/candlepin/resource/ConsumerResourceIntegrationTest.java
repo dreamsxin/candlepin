@@ -577,7 +577,8 @@ public class ConsumerResourceIntegrationTest extends DatabaseTestFixture {
         Provider<GuestMigration> migrationProvider = Providers.of(testMigration);
 
         ConsumerResource cr = new ConsumerResource(
-            this.consumerCurator, null, null, null, null, this.entitlementCurator, null, null, null, null,
+            this.consumerCurator, this.consumerTypeCurator, null, null, null, this.entitlementCurator, null,
+            null, null, null,
             null, null, null, null, this.poolManager, null, null, null, null, null, null, null, null,
             new CandlepinCommonTestConfig(), null, null, null, mock(ConsumerBindUtil.class),
             null, null, null, null, consumerEnricher, migrationProvider, this.modelTranslator);

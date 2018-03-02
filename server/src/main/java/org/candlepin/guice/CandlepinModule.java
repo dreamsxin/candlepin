@@ -426,8 +426,6 @@ public class CandlepinModule extends AbstractModule {
     }
 
     protected void configureModelTranslator() {
-        ModelTranslator modelTranslator = new StandardTranslator();
-
-        bind(ModelTranslator.class).toInstance(modelTranslator);
+        bind(ModelTranslator.class).to(StandardTranslator.class).asEagerSingleton();
     }
 }
