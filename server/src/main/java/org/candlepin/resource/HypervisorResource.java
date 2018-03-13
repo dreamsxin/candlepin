@@ -27,6 +27,7 @@ import org.candlepin.model.Consumer;
 import org.candlepin.model.ConsumerCurator;
 import org.candlepin.model.ConsumerType;
 import org.candlepin.model.ConsumerType.ConsumerTypeEnum;
+import org.candlepin.model.ConsumerTypeCurator;
 import org.candlepin.model.GuestId;
 import org.candlepin.model.HypervisorId;
 import org.candlepin.model.Owner;
@@ -87,12 +88,13 @@ public class HypervisorResource {
     private Provider<GuestMigration> migrationProvider;
     private ModelTranslator translator;
     private GuestIdResource guestIdResource;
+    private ConsumerType hypervisorType;
 
     @Inject
     public HypervisorResource(ConsumerResource consumerResource,
         ConsumerCurator consumerCurator, I18n i18n, OwnerCurator ownerCurator,
         Provider<GuestMigration> migrationProvider, ModelTranslator translator,
-        GuestIdResource guestIdResource) {
+        GuestIdResource guestIdResource, ConsumerTypeCurator consumerTypeCurator) {
         this.consumerResource = consumerResource;
         this.consumerCurator = consumerCurator;
         this.i18n = i18n;
@@ -100,6 +102,11 @@ public class HypervisorResource {
         this.migrationProvider = migrationProvider;
         this.translator = translator;
         this.guestIdResource = guestIdResource;
+
+        this.hypervisorType = consumerTypeCurator.lookupByLabel(ConsumerTypeEnum.HYPERVISOR.getLabel());
+        if (this.hypervisorType == null) {
+            this.hypervisorType = consumerTypeCurator.create(new ConsumerType(ConsumerTypeEnum.HYPERVISOR));
+        }
     }
 
     /**
@@ -198,6 +205,7 @@ public class HypervisorResource {
                 log.debug("Syncing virt host: {} ({} guest IDs)", hypervisorId, hostEntry.getValue().size());
 
                 boolean hostConsumerCreated = false;
+                boolean updatedType = false;
                 // Attempt to find a consumer for the given hypervisorId
                 Consumer consumer = null;
                 if (hypervisorConsumersMap.get(hypervisorId) == null) {
@@ -213,6 +221,10 @@ public class HypervisorResource {
                 }
                 else {
                     consumer = hypervisorConsumersMap.get(hypervisorId);
+                    if (!hypervisorType.equals(consumer.getType())) {
+                        consumer.setType(hypervisorType);
+                        updatedType = true;
+                    }
                 }
                 List<GuestId> guestIds = new ArrayList<>();
                 guestIdResource.populateEntities(guestIds, hostEntry.getValue());
@@ -225,7 +237,7 @@ public class HypervisorResource {
                 if (hostConsumerCreated) {
                     result.created(consumer);
                 }
-                else if (guestIdsUpdated) {
+                else if (guestIdsUpdated || updatedType) {
                     result.updated(consumer);
                 }
                 else {

@@ -125,6 +125,9 @@ public class HypervisorResourceTest {
 
         this.i18n = I18nFactory.getI18n(getClass(), Locale.US, I18nFactory.FALLBACK);
         this.hypervisorType = new ConsumerType(ConsumerTypeEnum.HYPERVISOR);
+        when(consumerTypeCurator.lookupByLabel(eq(ConsumerTypeEnum.HYPERVISOR.getLabel())))
+                .thenReturn(hypervisorType);
+
         this.translator = new StandardTranslator();
 
         this.consumerResource = new ConsumerResource(this.consumerCurator,
@@ -138,8 +141,10 @@ public class HypervisorResourceTest {
 
         this.guestIdResource = new GuestIdResource(this.guestIdCurator, this.consumerCurator, this
             .consumerResource, this.i18n, this.eventFactory, this.sink, migrationProvider, translator);
-        hypervisorResource = new HypervisorResource(consumerResource,
-            consumerCurator, i18n, ownerCurator, migrationProvider, translator, guestIdResource);
+
+        this.hypervisorResource = new HypervisorResource(consumerResource,
+            consumerCurator, i18n, ownerCurator, migrationProvider, translator, guestIdResource,
+            consumerTypeCurator);
 
 
         // Ensure that we get the consumer that was passed in back from the create call.

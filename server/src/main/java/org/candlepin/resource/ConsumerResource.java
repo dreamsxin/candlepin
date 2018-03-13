@@ -541,6 +541,13 @@ public class ConsumerResource {
             entity.setHypervisorId(hypervisorId);
         }
 
+        if (dto.getHypervisorId() == null &&
+            dto.getFact("system_uuid") != null &&
+            !"true".equals(dto.getFact("virt.is_guest"))) {
+            HypervisorId hypervisorId = new HypervisorId(entity, dto.getFact("system_uuid"), null);
+            entity.setHypervisorId(hypervisorId);
+        }
+
         if (dto.getContentTags() != null) {
             entity.setContentTags(dto.getContentTags());
         }
@@ -606,7 +613,25 @@ public class ConsumerResource {
         @QueryParam("identity_cert_creation") @DefaultValue("true") boolean identityCertCreation)
         throws BadRequestException {
 
-        Consumer consumer = new Consumer();
+        // fix for duplicate hypervisor/consumer problem
+        Consumer consumer = null;
+        if (ownerKey != null && dto.getFact("system_uuid") != null &&
+            !"true".equalsIgnoreCase(dto.getFact("virt.is_guest"))) {
+            Owner owner = ownerCurator.lookupByKey(ownerKey);
+            if (owner != null) {
+                consumer = consumerCurator.getHypervisor(dto.getFact("system_uuid"), owner);
+                if (consumer != null) {
+                    consumer.setIdCert(generateIdCert(consumer, false));
+                    this.updateConsumer(consumer.getUuid(), dto, principal);
+                    return translator.translate(
+                        consumerCurator.findByUuid(consumer.getUuid()), ConsumerDTO.class);
+                }
+            }
+        }
+        if (consumer == null) {
+            consumer = new Consumer();
+        }
+
         if (dto.getUuid() != null) {
             consumer.setUuid(dto.getUuid());
         }
