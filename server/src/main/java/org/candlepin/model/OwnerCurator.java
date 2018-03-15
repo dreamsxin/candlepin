@@ -172,7 +172,7 @@ public class OwnerCurator extends AbstractHibernateCurator<Owner> {
     @SuppressWarnings("unchecked")
     public CandlepinQuery<String> getConsumerIds(String ownerId) {
         DetachedCriteria criteria = DetachedCriteria.forClass(Consumer.class)
-            .add(Restrictions.eq("owner.id", ownerId))
+            .add(Restrictions.eq("ownerId", ownerId))
             .setProjection(Property.forName("id"));
 
         return this.cpQueryFactory.<String>buildQuery(this.currentSession(), criteria);
@@ -185,7 +185,7 @@ public class OwnerCurator extends AbstractHibernateCurator<Owner> {
     @SuppressWarnings("unchecked")
     public CandlepinQuery<String> getConsumerUuids(String ownerId) {
         DetachedCriteria criteria = DetachedCriteria.forClass(Consumer.class)
-            .add(Restrictions.eq("owner.id", ownerId))
+            .add(Restrictions.eq("ownerId", ownerId))
             .setProjection(Property.forName("uuid"));
 
         return this.cpQueryFactory.<String>buildQuery(this.currentSession(), criteria);

@@ -346,7 +346,7 @@ public class EntitlementResource {
                         "Entitlement migration is not permissible for units of type \"{0}\"",
                         destinationConsumer.getType().getLabel()));
                 }
-                if (!sourceConsumer.getOwner().getKey().equals(destinationConsumer.getOwner().getKey())) {
+                if (!sourceConsumer.getOwner().getId().equals(destinationConsumer.getOwnerId())) {
                     throw new BadRequestException(i18n.tr(
                         "Source and destination units must belong to the same organization"));
                 }

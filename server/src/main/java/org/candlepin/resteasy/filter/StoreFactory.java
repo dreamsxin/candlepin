@@ -148,6 +148,7 @@ public class StoreFactory {
         }
 
         @Override
+        // Vritant makes sense
         public Owner getOwner(Consumer entity) {
             return entity.getOwner();
         }

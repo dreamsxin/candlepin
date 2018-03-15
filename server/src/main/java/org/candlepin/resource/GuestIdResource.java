@@ -202,7 +202,7 @@ public class GuestIdResource {
             allGuestIds.add(gid.getGuestId());
         }
         VirtConsumerMap guestConsumerMap = consumerCurator.getGuestConsumersMap(
-            toUpdate.getOwner(), allGuestIds);
+            toUpdate.getOwnerId(), allGuestIds);
 
         GuestMigration guestMigration = migrationProvider.get().buildMigrationManifest(consumer, toUpdate);
         if (consumerResource.performConsumerUpdates(consumer, toUpdate, guestMigration)) {
@@ -256,7 +256,7 @@ public class GuestIdResource {
         GuestId guestIdEntity = new GuestId();
         populateEntity(guestIdEntity, updatedDTO);
         guestIdEntity.setConsumer(consumer);
-        GuestId toUpdate = guestIdCurator.findByGuestIdAndOrg(guestId, consumer.getOwner());
+        GuestId toUpdate = guestIdCurator.findByGuestIdAndOrg(guestId, consumer.getOwnerId());
         if (toUpdate != null) {
             guestIdEntity.setId(toUpdate.getId());
         }
@@ -296,7 +296,7 @@ public class GuestIdResource {
 
     private void unregisterConsumer(GuestId guest, Principal principal) {
         Consumer guestConsumer = consumerCurator.findByVirtUuid(guest.getGuestId(),
-            guest.getConsumer().getOwner().getId());
+            guest.getConsumer().getOwnerId());
         if (guestConsumer != null) {
             if ((principal == null) ||
                 principal.canAccess(guestConsumer, SubResource.NONE, Access.ALL)) {

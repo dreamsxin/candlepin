@@ -88,6 +88,7 @@ public class ConsumerTranslator extends TimestampedEntityTranslator<Consumer, Co
 
         // Process nested objects if we have a ModelTranslator to use to the translation...
         if (translator != null) {
+            // Vritant all external stuff gets obj
             dest.setOwner(translator.translate(source.getOwner(), OwnerDTO.class));
             dest.setEnvironment(translator.translate(source.getEnvironment(), EnvironmentDTO.class));
 

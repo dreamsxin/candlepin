@@ -100,7 +100,7 @@ public class Owner extends AbstractHibernateObject<Owner>
     @Column(name = "last_refreshed")
     private Date lastRefreshed;
 
-    @OneToMany(mappedBy = "owner", targetEntity = Consumer.class)
+    @OneToMany(mappedBy = "ownerId", targetEntity = Consumer.class)
     private Set<Consumer> consumers;
 
     @OneToMany(mappedBy = "owner", targetEntity = ActivationKey.class)

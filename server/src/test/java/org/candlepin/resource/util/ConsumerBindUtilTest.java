@@ -76,6 +76,8 @@ public class ConsumerBindUtilTest {
     public void init() throws Exception {
         this.i18n = I18nFactory.getI18n(getClass(), Locale.US, I18nFactory.FALLBACK);
 
+        owner = TestUtil.createOwner();
+        owner.setId(TestUtil.randomString());
         consumerBindUtil = new ConsumerBindUtil(
             this.entitler,
             this.i18n,
@@ -178,7 +180,7 @@ public class ConsumerBindUtilTest {
 
         Consumer consumer = new Consumer("sys.example.com", null, null, system);
         doThrow(new BadRequestException("exception")).when(serviceLevelValidator)
-            .validate(eq(owner), eq(key1.getServiceLevel()));
+            .validate(eq(owner.getId()), eq(key1.getServiceLevel()));
         consumerBindUtil.handleActivationKeys(consumer, keys, false);
     }
 
@@ -191,7 +193,7 @@ public class ConsumerBindUtilTest {
 
         Consumer consumer = new Consumer("sys.example.com", null, null, system);
         doThrow(new BadRequestException("exception")).when(serviceLevelValidator)
-            .validate(eq(owner), eq(key1.getServiceLevel()));
+            .validate(eq(owner.getId()), eq(key1.getServiceLevel()));
         consumerBindUtil.handleActivationKeys(consumer, keys, false);
     }
 

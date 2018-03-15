@@ -725,7 +725,7 @@ public class ConsumerResource {
         }
 
         validateContentAccessMode(consumer);
-        consumerBindUtil.validateServiceLevel(owner, consumer.getServiceLevel());
+        consumerBindUtil.validateServiceLevel(owner.getId(), consumer.getServiceLevel());
 
         try {
             Date createdDate = consumer.getCreated();
@@ -755,7 +755,7 @@ public class ConsumerResource {
             complianceRules.getStatus(consumer, null, false, false);
             consumerCurator.update(consumer);
 
-            log.info("Consumer {} created in org {}", consumer.getUuid(), consumer.getOwner().getKey());
+            log.info("Consumer {} created in org {}", consumer.getUuid(), consumer.getOwnerId());
 
             return consumer;
         }
@@ -857,7 +857,7 @@ public class ConsumerResource {
                 throw new BadRequestException(
                     i18n.tr("The consumer cannot be assigned a content access mode."));
             }
-
+            // Vritant fair enough
             if (!consumer.getOwner().isAllowedContentAccessMode(consumer.getContentAccessMode())) {
                 throw new BadRequestException(
                     i18n.tr("The consumer cannot use the supplied content access mode."));
@@ -1302,7 +1302,7 @@ public class ConsumerResource {
         if (level != null &&
             !level.equals(toUpdate.getServiceLevel())) {
             log.info("   Updating consumer service level setting.");
-            consumerBindUtil.validateServiceLevel(toUpdate.getOwner(), level);
+            consumerBindUtil.validateServiceLevel(toUpdate.getOwnerId(), level);
             toUpdate.setServiceLevel(level);
             changesMade = true;
         }
@@ -1341,6 +1341,7 @@ public class ConsumerResource {
         if (updated.getContentAccessMode() != null &&
             !updated.getContentAccessMode().equals(toUpdate.getContentAccessMode()) &&
             toUpdate.isManifestDistributor()) {
+            // Vritant fair enough
             if (!toUpdate.getOwner().isAllowedContentAccessMode(updated.getContentAccessMode())) {
                 throw new BadRequestException(i18n.tr(
                     "The consumer cannot use the supplied content access mode."));
@@ -1577,7 +1578,7 @@ public class ConsumerResource {
 
     private void logShareConsumerRequestWarning(String api, Consumer consumer) {
         log.warn("skipping {} request for share consumer {} of org {} and of recipient org {}",
-            api, consumer.getUuid(), consumer.getOwner().getKey(), consumer.getRecipientOwnerKey());
+            api, consumer.getUuid(), consumer.getOwnerId(), consumer.getRecipientOwnerKey());
     }
 
     @ApiOperation(notes = "Retrieves a list of Entitlement Certificates for the Consumer",
@@ -1874,6 +1875,7 @@ public class ConsumerResource {
             // I hate double negatives, but if they have accepted all
             // terms, we want comeToTerms to be true.
             long subTermsStart = System.currentTimeMillis();
+            // Vritant adapter all owners
             if (!consumer.isShare() && subAdapter.hasUnacceptedSubscriptionTerms(consumer.getOwner())) {
                 return Response.serverError().build();
             }
@@ -1928,6 +1930,7 @@ public class ConsumerResource {
                 entitlements = entitler.bindByProducts(autobindData);
             }
             catch (AutobindDisabledForOwnerException e) {
+                // Vritant exception thrown
                 throw new BadRequestException(i18n.tr("Ignoring request to auto-attach. " +
                     "It is disabled for org \"{0}\".", consumer.getOwner().getKey()));
             }
@@ -1973,6 +1976,7 @@ public class ConsumerResource {
         // Verify consumer exists:
         Consumer consumer = consumerCurator.verifyAndLookupConsumer(consumerUuid);
 
+        //Vritant fair enough
         if (consumer.getOwner().isAutobindDisabled()) {
             throw new BadRequestException(i18n.tr("Owner has autobind disabled."));
         }
@@ -1980,7 +1984,7 @@ public class ConsumerResource {
         List<PoolQuantity> dryRunPools = new ArrayList<>();
 
         try {
-            consumerBindUtil.validateServiceLevel(consumer.getOwner(), serviceLevel);
+            consumerBindUtil.validateServiceLevel(consumer.getOwnerId(), serviceLevel);
             dryRunPools = entitler.getDryRun(consumer, serviceLevel);
         }
         catch (ForbiddenException fe) {
@@ -2071,6 +2075,7 @@ public class ConsumerResource {
         @PathParam("consumer_uuid") @Verify(Consumer.class) String consumerUuid) {
 
         Consumer consumer = consumerCurator.verifyAndLookupConsumer(consumerUuid);
+        // Vritant fair enough
         return translator.translate(consumer.getOwner(), OwnerDTO.class);
     }
 
@@ -2543,6 +2548,7 @@ public class ConsumerResource {
 
         // The host would be in a different organization if a host-restricted pool has been shared into the
         // current organization.
+        // Vritant cant change
         if (host == null || principal.canAccess(host.getOwner(), SubResource.CONSUMERS, Access.READ_ONLY)) {
             return translator.translate(host, ConsumerDTO.class);
         }

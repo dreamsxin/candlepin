@@ -14,9 +14,13 @@
  */
 package org.candlepin.policy.js.entitlement;
 
-import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 import org.candlepin.config.ConfigProperties;
@@ -24,10 +28,9 @@ import org.candlepin.controller.PoolManager;
 import org.candlepin.model.ConsumerType;
 import org.candlepin.model.ConsumerType.ConsumerTypeEnum;
 import org.candlepin.model.Entitlement;
-import org.candlepin.model.Owner;
 import org.candlepin.model.Pool;
-import org.candlepin.model.Product;
 import org.candlepin.model.PoolQuantity;
+import org.candlepin.model.Product;
 import org.candlepin.model.dto.Subscription;
 import org.candlepin.test.TestUtil;
 
@@ -94,8 +97,7 @@ public class HostedVirtLimitEntitlementRulesTest extends EntitlementRulesTestFix
         List<Pool> poolList = new ArrayList<>();
         poolList.add(virtBonusPool);
         ArgumentCaptor<Set> captor = ArgumentCaptor.forClass(Set.class);
-        ArgumentCaptor<Owner> ownerCaptor = ArgumentCaptor.forClass(Owner.class);
-        when(poolManagerMock.lookupBySubscriptionIds(ownerCaptor.capture(), captor.capture()))
+        when(poolManagerMock.lookupBySubscriptionIds(anyString(), captor.capture()))
             .thenReturn(poolList);
         when(poolManagerMock.lookupBySubscriptionId(eq(physicalPool.getOwner()),
             eq(physicalPool.getSubscriptionId())))
@@ -171,8 +173,7 @@ public class HostedVirtLimitEntitlementRulesTest extends EntitlementRulesTestFix
         poolList.add(virtBonusPool2);
 
         ArgumentCaptor<Set> captor = ArgumentCaptor.forClass(Set.class);
-        ArgumentCaptor<Owner> ownerCaptor = ArgumentCaptor.forClass(Owner.class);
-        when(poolManagerMock.lookupBySubscriptionIds(ownerCaptor.capture(), captor.capture()))
+        when(poolManagerMock.lookupBySubscriptionIds(anyString(), captor.capture()))
             .thenReturn(poolList);
         when(poolManagerMock.lookupBySubscriptionId(eq(physicalPool.getOwner()),
             eq(physicalPool.getSubscriptionId())))
@@ -344,8 +345,7 @@ public class HostedVirtLimitEntitlementRulesTest extends EntitlementRulesTestFix
         List<Pool> poolList = new ArrayList<>();
         poolList.add(virtBonusPool);
         ArgumentCaptor<Set> captor = ArgumentCaptor.forClass(Set.class);
-        ArgumentCaptor<Owner> ownerCaptor = ArgumentCaptor.forClass(Owner.class);
-        when(poolManagerMock.lookupBySubscriptionIds(ownerCaptor.capture(), captor.capture()))
+        when(poolManagerMock.lookupBySubscriptionIds(anyString(), captor.capture()))
             .thenReturn(poolList);
         when(poolManagerMock.lookupBySubscriptionId(eq(physicalPool.getOwner()), eq("subId")))
             .thenReturn(poolList);

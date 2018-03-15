@@ -68,7 +68,7 @@ public class OwnerPermission implements Permission, Serializable {
             return Restrictions.eq("key", owner.getKey());
         }
         else if (Consumer.class.equals(entityClass)) {
-            return Restrictions.eq("owner", owner);
+            return Restrictions.eq("ownerId", owner.getId());
         }
         else if (Pool.class.equals(entityClass)) {
             return Restrictions.eq("owner", owner);

@@ -37,18 +37,21 @@ public class ConsumerPrincipal extends Principal {
         addPermission(new ConsumerPermission(consumer));
 
         // Allow consumers to attach entitlements:
+        // Vritant keep getOwner
         addPermission(new AttachPermission(consumer.getOwner()));
 
         // Allow consumers to view and manage their entitlements:
         addPermission(new ConsumerEntitlementPermission(consumer));
 
         // Allow consumers to list their owner's pools and subscriptions:
+        // Vritant keep getOwner
         addPermission(new OwnerPoolsPermission(consumer.getOwner()));
 
         // Allow consumers to view their owner's service levels:
         addPermission(new ConsumerServiceLevelsPermission(consumer));
 
         // Allow consumers to run virt-who hypervisor update
+        // Vritant keep getOwner
         addPermission(new ConsumerOrgHypervisorPermission(consumer.getOwner()));
 
         // Allow consumers to check the status of their own jobs.

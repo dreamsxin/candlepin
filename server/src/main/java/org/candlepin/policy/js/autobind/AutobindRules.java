@@ -108,6 +108,7 @@ public class AutobindRules {
         // Provide objects for the script:
         JsonJsContext args = new JsonJsContext(mapper);
         args.put("consumer", this.translator.translate(consumer, ConsumerDTO.class));
+        // Vritant: manifests... backward compatibility
         args.put("owner", this.translator.translate(consumer.getOwner(), OwnerDTO.class));
         args.put("serviceLevelOverride", serviceLevelOverride);
         args.put("pools", poolDTOs.toArray());

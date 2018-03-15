@@ -330,7 +330,7 @@ public class ConsumerCuratorTest extends DatabaseTestFixture {
 
     @Test
     public void noHostRegistered() {
-        Consumer host = consumerCurator.getHost("system-uuid-for-guest", owner);
+        Consumer host = consumerCurator.getHost("system-uuid-for-guest", owner.getId());
         assertTrue(host == null);
     }
 
@@ -346,7 +346,7 @@ public class ConsumerCuratorTest extends DatabaseTestFixture {
         host.addGuestId(new GuestId("DAF0FE10-956B-7B4E-B7DC-B383CE681BA8"));
         consumerCurator.update(host);
 
-        Consumer guestHost = consumerCurator.getHost("daf0fe10-956b-7b4e-b7dc-b383ce681ba8", owner);
+        Consumer guestHost = consumerCurator.getHost("daf0fe10-956b-7b4e-b7dc-b383ce681ba8", owner.getId());
         assertEquals(host, guestHost);
     }
 
@@ -363,7 +363,7 @@ public class ConsumerCuratorTest extends DatabaseTestFixture {
         consumerCurator.update(host);
 
         Consumer guestHost = consumerCurator.getHost(
-            "Daf0fe10-956b-7b4e-b7dc-B383CE681ba8", owner);
+            "Daf0fe10-956b-7b4e-b7dc-B383CE681ba8", owner.getId());
         assertEquals(host, guestHost);
     }
 
@@ -380,7 +380,7 @@ public class ConsumerCuratorTest extends DatabaseTestFixture {
         consumerCurator.update(host);
 
         Consumer guestHost = consumerCurator.getHost(
-            "10fef0da-6b95-4e7b-b7dc-b383ce681ba8", owner);
+            "10fef0da-6b95-4e7b-b7dc-b383ce681ba8", owner.getId());
         assertEquals(host, guestHost);
     }
 
@@ -413,7 +413,7 @@ public class ConsumerCuratorTest extends DatabaseTestFixture {
         host2.addGuestId(host2Guest);
         consumerCurator.update(host2);
 
-        Consumer guestHost = consumerCurator.getHost("daf0fe10-956b-7b4e-b7dc-b383ce681ba8", owner);
+        Consumer guestHost = consumerCurator.getHost("daf0fe10-956b-7b4e-b7dc-b383ce681ba8", owner.getId());
 
         assertTrue(host1Guest.getUpdated().before(host2Guest.getUpdated()));
         assertEquals(host2.getUuid(), guestHost.getUuid());
@@ -448,7 +448,7 @@ public class ConsumerCuratorTest extends DatabaseTestFixture {
         host1.addGuestId(host1Guest);
         consumerCurator.update(host1);
 
-        Consumer guestHost = consumerCurator.getHost("daf0fe10-956b-7b4e-b7dc-b383ce681ba8", owner);
+        Consumer guestHost = consumerCurator.getHost("daf0fe10-956b-7b4e-b7dc-b383ce681ba8", owner.getId());
         assertTrue(host1Guest.getUpdated().after(host2Guest.getUpdated()));
         assertEquals(host1.getUuid(), guestHost.getUuid());
     }
@@ -466,11 +466,11 @@ public class ConsumerCuratorTest extends DatabaseTestFixture {
         host.addGuestId(new GuestId("DAF0FE10-956B-7B4E-B7DC-B383CE681BA8"));
         consumerCurator.update(host);
 
-        Consumer guestHost = spy.getHost("daf0fe10-956b-7b4e-b7dc-b383ce681ba8", owner);
+        Consumer guestHost = spy.getHost("daf0fe10-956b-7b4e-b7dc-b383ce681ba8", owner.getId());
         assertEquals(host, guestHost);
-        guestHost = spy.getHost("daf0fe10-956b-7b4e-b7dc-b383ce681ba8", owner);
+        guestHost = spy.getHost("daf0fe10-956b-7b4e-b7dc-b383ce681ba8", owner.getId());
         assertEquals(host, guestHost);
-        guestHost = spy.getHost("daf0fe10-956b-7b4e-b7dc-b383ce681ba8", owner);
+        guestHost = spy.getHost("daf0fe10-956b-7b4e-b7dc-b383ce681ba8", owner.getId());
         assertEquals(host, guestHost);
         verify(spy, times(1)).currentSession();
     }
@@ -496,13 +496,13 @@ public class ConsumerCuratorTest extends DatabaseTestFixture {
         hostB.addGuestId(new GuestId("DAF0FE10-956B-7B4E-B7DC-B383CE681BA9"));
         consumerCurator.update(hostB);
 
-        Consumer guestHostA = spy.getHost("daf0fe10-956b-7b4e-b7dc-b383ce681ba8", owner);
-        Consumer guestHostB = spy.getHost("daf0fe10-956b-7b4e-b7dc-b383ce681ba9", owner);
+        Consumer guestHostA = spy.getHost("daf0fe10-956b-7b4e-b7dc-b383ce681ba8", owner.getId());
+        Consumer guestHostB = spy.getHost("daf0fe10-956b-7b4e-b7dc-b383ce681ba9", owner.getId());
         assertEquals(hostA, guestHostA);
         assertEquals(hostB, guestHostB);
-        guestHostA = spy.getHost("daf0fe10-956b-7b4e-b7dc-b383ce681ba8", owner);
+        guestHostA = spy.getHost("daf0fe10-956b-7b4e-b7dc-b383ce681ba8", owner.getId());
         assertEquals(hostA, guestHostA);
-        guestHostB = spy.getHost("daf0fe10-956b-7b4e-b7dc-b383ce681ba9", owner);
+        guestHostB = spy.getHost("daf0fe10-956b-7b4e-b7dc-b383ce681ba9", owner.getId());
         assertEquals(hostB, guestHostB);
         verify(spy, times(2)).currentSession();
     }
@@ -675,7 +675,8 @@ public class ConsumerCuratorTest extends DatabaseTestFixture {
         consumer3.setUuid("3");
         consumer3 = consumerCurator.create(consumer3);
 
-        List<Consumer> results = consumerCurator.findByUuidsAndOwner(Arrays.asList("2"), owner2).list();
+        List<Consumer> results = consumerCurator
+            .findByUuidsAndOwner(Arrays.asList("2"), owner2.getId()).list();
         assertTrue(results.contains(consumer2));
         assertFalse(results.contains(consumer));
         assertFalse(results.contains(consumer3));
@@ -697,7 +698,7 @@ public class ConsumerCuratorTest extends DatabaseTestFixture {
         Set<String> guestIds = new HashSet<>();
         guestIds.add(guestId1ReverseEndian); // reversed endian match
         guestIds.add(guestId2); // direct match
-        VirtConsumerMap guestMap = consumerCurator.getGuestConsumersMap(owner, guestIds);
+        VirtConsumerMap guestMap = consumerCurator.getGuestConsumersMap(owner.getId(), guestIds);
 
         assertEquals(2, guestMap.size());
 
@@ -724,7 +725,7 @@ public class ConsumerCuratorTest extends DatabaseTestFixture {
         Set<String> guestIds = new HashSet<>();
         guestIds.add(guestId1ReverseEndian.toUpperCase()); // reversed endian match
         guestIds.add(guestId2.toUpperCase()); // direct match
-        VirtConsumerMap guestMap = consumerCurator.getGuestConsumersMap(owner, guestIds);
+        VirtConsumerMap guestMap = consumerCurator.getGuestConsumersMap(owner.getId(), guestIds);
 
         assertEquals(2, guestMap.size());
 

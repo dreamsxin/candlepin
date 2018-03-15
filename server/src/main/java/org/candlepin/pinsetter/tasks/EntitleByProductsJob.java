@@ -79,7 +79,7 @@ public class EntitleByProductsJob extends KingpinJob {
     public static JobDetail bindByProducts(String[] prodIds, Consumer consumer,
         Date entitleDate, Collection<String> fromPools) {
         JobDataMap map = new JobDataMap();
-        map.put(JobStatus.OWNER_ID, consumer.getOwner().getKey());
+        map.put(JobStatus.OWNER_ID, consumer.getOwnerId());
         map.put("product_ids", prodIds);
         map.put(JobStatus.TARGET_TYPE, JobStatus.TargetType.CONSUMER);
         map.put(JobStatus.TARGET_ID, consumer.getUuid());

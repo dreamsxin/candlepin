@@ -83,7 +83,8 @@ public class TestUtil {
     }
 
     public static Owner createOwner(String key, String name) {
-        return new Owner(key, name);
+        Owner owner = new Owner(key, name);
+        return owner;
     }
 
     public static Owner createOwner(String key) {

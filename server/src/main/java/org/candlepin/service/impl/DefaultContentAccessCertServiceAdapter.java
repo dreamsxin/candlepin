@@ -102,6 +102,7 @@ public class DefaultContentAccessCertServiceAdapter implements ContentAccessCert
     public ContentAccessCertificate getCertificate(Consumer consumer)
         throws GeneralSecurityException, IOException {
 
+        // Vritant fair enough
         Owner owner = consumer.getOwner();
         // we only know about one mode right now. If add any, we will need to add the
         // appropriate cert generation
@@ -179,9 +180,8 @@ public class DefaultContentAccessCertServiceAdapter implements ContentAccessCert
             return true;
         }
         Environment env = consumer.getEnvironment();
-        Owner owner = consumer.getOwner();
         OwnerEnvContentAccess oeca = ownerEnvContentAccessCurator.getContentAccess(
-            owner.getId(), env == null ? null : env.getId());
+            consumer.getOwnerId(), env == null ? null : env.getId());
         return oeca == null || consumer.getContentAccessCert() == null ||
             oeca.getUpdated().getTime() > date.getTime();
     }
@@ -211,6 +211,7 @@ public class DefaultContentAccessCertServiceAdapter implements ContentAccessCert
         org.candlepin.model.dto.Content dContent = new org.candlepin.model.dto.Content();
         List<org.candlepin.model.dto.Content> dtoContents = new ArrayList<>();
         dtoContents.add(dContent);
+        // Vritant in the cert
         dContent.setPath(getContentPrefix(consumer.getOwner(), consumer.getEnvironment()));
         container.setContent(dtoContents);
 
@@ -255,6 +256,7 @@ public class DefaultContentAccessCertServiceAdapter implements ContentAccessCert
         StringBuilder sb = new StringBuilder("CN=");
         sb.append(consumer.getUuid());
         sb.append(", O=");
+        // Vritant makes sense
         sb.append(consumer.getOwner().getKey());
         if (consumer.getEnvironment() != null) {
             sb.append(", OU=");

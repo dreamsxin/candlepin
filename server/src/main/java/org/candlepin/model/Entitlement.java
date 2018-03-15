@@ -149,6 +149,7 @@ public class Entitlement extends AbstractHibernateObject<Entitlement>
      * @param quantityIn entitlement quantity
      */
     public Entitlement(Consumer consumerIn, Integer quantityIn) {
+        // Vritant
         owner = consumerIn.getOwner();
         consumer = consumerIn;
         quantity = quantityIn == null || quantityIn.intValue() < 1 ?

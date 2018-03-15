@@ -179,7 +179,7 @@ public class HypervisorResourceTest {
         when(ownerCurator.lookupByKey(eq(owner.getKey()))).thenReturn(owner);
         when(consumerCurator.getHostConsumersMap(any(Owner.class), any(Set.class)))
             .thenReturn(new VirtConsumerMap());
-        when(consumerCurator.getGuestConsumersMap(any(Owner.class), any(Set.class)))
+        when(consumerCurator.getGuestConsumersMap(any(String.class), any(Set.class)))
             .thenReturn(new VirtConsumerMap());
 
         when(ownerCurator.lookupByKey(eq(owner.getKey()))).thenReturn(owner);
@@ -231,7 +231,7 @@ public class HypervisorResourceTest {
         // Force update
         when(consumerCurator.getHostConsumersMap(any(Owner.class), any(Set.class)))
             .thenReturn(mockHypervisorConsumerMap(hypervisorId, existing));
-        when(consumerCurator.getGuestConsumersMap(any(Owner.class), any(Set.class)))
+        when(consumerCurator.getGuestConsumersMap(any(String.class), any(Set.class)))
             .thenReturn(new VirtConsumerMap());
 
         HypervisorCheckInResult result = hypervisorResource.hypervisorUpdate(
@@ -258,7 +258,7 @@ public class HypervisorResourceTest {
 
         when(consumerCurator.getHostConsumersMap(any(Owner.class), any(Set.class)))
             .thenReturn(new VirtConsumerMap());
-        when(consumerCurator.getGuestConsumersMap(any(Owner.class), any(Set.class)))
+        when(consumerCurator.getGuestConsumersMap(any(String.class), any(Set.class)))
             .thenReturn(new VirtConsumerMap());
 
         when(consumerTypeCurator.lookupByLabel(eq(ConsumerTypeEnum.HYPERVISOR.getLabel())))
@@ -297,7 +297,7 @@ public class HypervisorResourceTest {
 
         when(consumerCurator.getHostConsumersMap(any(Owner.class), any(Set.class)))
             .thenReturn(new VirtConsumerMap());
-        when(consumerCurator.getGuestConsumersMap(any(Owner.class), any(Set.class)))
+        when(consumerCurator.getGuestConsumersMap(any(String.class), any(Set.class)))
             .thenReturn(new VirtConsumerMap());
 
         when(ownerCurator.lookupByKey(eq(owner.getKey()))).thenReturn(owner);
@@ -340,7 +340,7 @@ public class HypervisorResourceTest {
 
         when(consumerCurator.getHostConsumersMap(any(Owner.class), any(Set.class)))
             .thenReturn(new VirtConsumerMap());
-        when(consumerCurator.getGuestConsumersMap(any(Owner.class), any(Set.class)))
+        when(consumerCurator.getGuestConsumersMap(any(String.class), any(Set.class)))
             .thenReturn(new VirtConsumerMap());
 
         when(ownerCurator.lookupByKey(eq(owner.getKey()))).thenReturn(owner);
@@ -372,7 +372,7 @@ public class HypervisorResourceTest {
 
         when(consumerCurator.getHostConsumersMap(any(Owner.class), any(Set.class)))
             .thenReturn(new VirtConsumerMap());
-        when(consumerCurator.getGuestConsumersMap(any(Owner.class), any(Set.class)))
+        when(consumerCurator.getGuestConsumersMap(any(String.class), any(Set.class)))
             .thenReturn(new VirtConsumerMap());
 
         when(ownerCurator.lookupByKey(eq(owner.getKey()))).thenReturn(owner);
@@ -405,7 +405,7 @@ public class HypervisorResourceTest {
 
         when(consumerCurator.getHostConsumersMap(any(Owner.class), any(Set.class)))
             .thenReturn(new VirtConsumerMap());
-        when(consumerCurator.getGuestConsumersMap(any(Owner.class), any(Set.class)))
+        when(consumerCurator.getGuestConsumersMap(any(String.class), any(Set.class)))
             .thenReturn(new VirtConsumerMap());
 
         when(principal.canAccess(eq(owner), eq(SubResource.CONSUMERS), eq(Access.CREATE)))

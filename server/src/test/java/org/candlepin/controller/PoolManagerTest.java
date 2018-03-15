@@ -1063,7 +1063,7 @@ public class PoolManagerTest {
 
         when(page.getPageData()).thenReturn(pools);
         when(mockPoolCurator.listAvailableEntitlementPools(any(Consumer.class),
-            any(Owner.class), any(String.class), any(String.class), eq(now),
+            any(String.class), any(String.class), any(String.class), eq(now),
             any(PoolFilterBuilder.class), any(PageRequest.class), anyBoolean(), anyBoolean(), anyBoolean(),
             any(Date.class)))
             .thenReturn(page);
@@ -1114,7 +1114,7 @@ public class PoolManagerTest {
         Page page = mock(Page.class);
 
         when(page.getPageData()).thenReturn(pools);
-        when(mockPoolCurator.listAvailableEntitlementPools(any(Consumer.class), any(Owner.class),
+        when(mockPoolCurator.listAvailableEntitlementPools(any(Consumer.class), any(String.class),
             any(String.class), any(String.class), eq(now),
             any(PoolFilterBuilder.class), any(PageRequest.class), anyBoolean(), anyBoolean(), anyBoolean(),
             any(Date.class)))
@@ -1342,7 +1342,7 @@ public class PoolManagerTest {
         when(page.getPageData()).thenReturn(pools);
 
         when(mockPoolCurator.listAvailableEntitlementPools(any(Consumer.class),
-            any(Owner.class), anyString(), anyString(), eq(now),
+            any(String.class), anyString(), anyString(), eq(now),
             any(PoolFilterBuilder.class),
             any(PageRequest.class), anyBoolean(), anyBoolean(), anyBoolean(), any(Date.class)))
                 .thenReturn(page);
@@ -1836,7 +1836,7 @@ public class PoolManagerTest {
         when(mockPoolCurator.lockAndLoad(pool)).thenReturn(pool);
         when(enforcerMock.update(any(Consumer.class), any(Entitlement.class), any(Integer.class)))
             .thenReturn(new ValidationResult());
-        when(mockPoolCurator.lookupOversubscribedBySubscriptionIds(any(Owner.class), anyMap()))
+        when(mockPoolCurator.lookupOversubscribedBySubscriptionIds(any(String.class), anyMap()))
             .thenReturn(Collections.singletonList(derivedPool));
         when(mockPoolCurator.retrieveOrderedEntitlementsOf(anyListOf(Pool.class)))
             .thenReturn(Collections.singletonList(derivedEnt));
@@ -1903,7 +1903,7 @@ public class PoolManagerTest {
         when(mockPoolCurator.lockAndLoad(pool)).thenReturn(pool);
         when(enforcerMock.update(any(Consumer.class), any(Entitlement.class), any(Integer.class)))
             .thenReturn(new ValidationResult());
-        when(mockPoolCurator.lookupOversubscribedBySubscriptionIds(any(Owner.class), anyMap())).thenReturn(
+        when(mockPoolCurator.lookupOversubscribedBySubscriptionIds(any(String.class), anyMap())).thenReturn(
             Arrays.asList(derivedPool, derivedPool2, derivedPool3));
         when(mockPoolCurator.retrieveOrderedEntitlementsOf(eq(Arrays.asList(derivedPool)))).thenReturn(
             Arrays.asList(derivedEnt, derivedEnt2));
@@ -1971,8 +1971,8 @@ public class PoolManagerTest {
 
     @Test
     public void testNullArgumentsDontBreakStuff() {
-        manager.lookupBySubscriptionIds(owner, null);
-        manager.lookupBySubscriptionIds(owner, new ArrayList<>());
+        manager.lookupBySubscriptionIds(owner.getId(), null);
+        manager.lookupBySubscriptionIds(owner.getId(), new ArrayList<>());
         manager.createPools(null);
         manager.createPools(new ArrayList<>());
         manager.secureFind(new ArrayList<>());
@@ -1990,10 +1990,9 @@ public class PoolManagerTest {
 
         Class<List<String>> listClass = (Class<List<String>>) (Class) ArrayList.class;
         ArgumentCaptor<List<String>> poolsArg = ArgumentCaptor.forClass(listClass);
-        ArgumentCaptor<Owner> ownerArg = ArgumentCaptor.forClass(Owner.class);
-        when(mockPoolCurator.lookupBySubscriptionIds(ownerArg.capture(), poolsArg.capture()))
+        when(mockPoolCurator.lookupBySubscriptionIds(anyString(), poolsArg.capture()))
             .thenReturn(pools);
-        List<Pool> found = manager.lookupBySubscriptionIds(owner, subids);
+        List<Pool> found = manager.lookupBySubscriptionIds(owner.getId(), subids);
         List<String> argument = poolsArg.getValue();
         assertEquals(pools, found);
         assertEquals(argument, subids);

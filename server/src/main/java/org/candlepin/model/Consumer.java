@@ -150,8 +150,11 @@ public class Consumer extends AbstractHibernateObject implements Linkable, Owned
     @JoinColumn(nullable = false)
     private ConsumerType type;
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
+    @Column(name = "owner_id")
+    private String ownerId;
+
+    @Transient
+    @JsonIgnore
     private Owner owner;
 
     @ManyToOne
@@ -235,7 +238,10 @@ public class Consumer extends AbstractHibernateObject implements Linkable, Owned
 
         this.name = name;
         this.username = userName;
-        this.owner = owner;
+        if (owner != null) {
+            this.ownerId = owner.getId();
+            this.owner = owner;
+        }
         this.type = type;
         this.facts = new HashMap<>();
         this.installedProducts = new HashSet<>();
@@ -355,7 +361,13 @@ public class Consumer extends AbstractHibernateObject implements Linkable, Owned
     /**
      * @return the owner of this Consumer.
      */
-    @Override
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    /**
+     * @return the owner of this Consumer.
+     */
     public Owner getOwner() {
         return owner;
     }
@@ -366,6 +378,9 @@ public class Consumer extends AbstractHibernateObject implements Linkable, Owned
      */
     public void setOwner(Owner owner) {
         this.owner = owner;
+        if (owner != null) {
+            this.ownerId = owner.getId();
+        }
     }
 
     @Override

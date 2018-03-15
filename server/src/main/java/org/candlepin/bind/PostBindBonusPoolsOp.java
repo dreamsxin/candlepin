@@ -49,7 +49,7 @@ public class PostBindBonusPoolsOp implements BindOperation {
 
         poolManager.handlePostEntitlement(poolManager, consumer, entitlements, poolQuantities);
         // we might have changed the bonus pool quantities, lets revoke ents if needed.
-        poolManager.checkBonusPoolQuantities(consumer.getOwner(), entitlements);
+        poolManager.checkBonusPoolQuantities(consumer.getOwnerId(), entitlements);
         return true;
     }
 

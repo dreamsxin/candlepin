@@ -202,6 +202,7 @@ public class Entitler {
     public List<Entitlement> bindByProducts(AutobindData data, boolean force)
         throws AutobindDisabledForOwnerException {
         Consumer consumer = data.getConsumer();
+        // Vritant: use autobind and key
         Owner owner = consumer.getOwner();
 
         if (!consumer.isDev() && owner.isAutobindDisabled()) {
@@ -221,7 +222,7 @@ public class Entitler {
 
             // Scoped to the consumer's organization.  Even in the event of sharing, a guest in one
             // organization should not be able to compel a heal in an another organization
-            Consumer host = consumerCurator.getHost(consumer, consumer.getOwner());
+            Consumer host = consumerCurator.getHost(consumer, consumer.getOwnerId());
             if (host != null && (force || host.isAutoheal())) {
                 log.info("Attempting to heal host machine with UUID \"{}\" for guest with UUID \"{}\"",
                     host.getUuid(), consumer.getUuid());
@@ -254,7 +255,7 @@ public class Entitler {
         }
         if (consumer.isDev()) {
             if (config.getBoolean(ConfigProperties.STANDALONE) ||
-                !poolCurator.hasActiveEntitlementPools(consumer.getOwner(), null)) {
+                !poolCurator.hasActiveEntitlementPools(consumer.getOwnerId(), null)) {
 
                 throw new ForbiddenException(i18n.tr(
                     "Development units may only be used on hosted servers" +
@@ -327,6 +328,7 @@ public class Entitler {
         Product skuProduct = devProducts.getSku();
         Date startDate = consumer.getCreated();
         Date endDate = getEndDate(skuProduct, startDate);
+        // Vritant needs to create a pool
         Pool pool = new Pool(consumer.getOwner(), skuProduct, devProducts.getProvided(), 1L, startDate,
             endDate, "", "", "");
 
@@ -358,6 +360,7 @@ public class Entitler {
             devProductIds.add(ip.getProductId());
         }
 
+        // Vritant owner
         Owner owner = consumer.getOwner();
         Map<String, ProductData> productMap = new HashMap<>();
         Map<String, ContentData> contentMap = new HashMap<>();
@@ -492,10 +495,10 @@ public class Entitler {
 
         List<PoolQuantity> result = new ArrayList<>();
         try {
-            Owner owner = consumer.getOwner();
+            String ownerId = consumer.getOwnerId();
             if (consumer.isDev()) {
                 if (config.getBoolean(ConfigProperties.STANDALONE) ||
-                    !poolCurator.hasActiveEntitlementPools(consumer.getOwner(), null)) {
+                    !poolCurator.hasActiveEntitlementPools(consumer.getOwnerId(), null)) {
                     throw new ForbiddenException(i18n.tr(
                         "Development units may only be used on hosted servers" +
                         " and with orgs that have active subscriptions."
@@ -515,7 +518,7 @@ public class Entitler {
             }
             else {
                 result = poolManager.getBestPools(
-                    consumer, null, null, owner, serviceLevelOverride, null);
+                    consumer, null, null, ownerId, serviceLevelOverride, null);
             }
             log.debug("Created Pool Quantity list: {}", result);
         }

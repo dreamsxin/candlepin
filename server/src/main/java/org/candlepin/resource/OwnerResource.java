@@ -540,7 +540,7 @@ public class OwnerResource {
                 entity.setDefaultServiceLevel(null);
             }
             else {
-                this.serviceLevelValidator.validate(entity, dto.getDefaultServiceLevel());
+                this.serviceLevelValidator.validate(entity.getId(), dto.getDefaultServiceLevel());
                 entity.setDefaultServiceLevel(dto.getDefaultServiceLevel());
             }
         }
@@ -1186,7 +1186,7 @@ public class OwnerResource {
             }
         }
         // test is on the string "true" and is case insensitive.
-        return poolManager.retrieveServiceLevelsForOwner(owner, Boolean.parseBoolean(exempt));
+        return poolManager.retrieveServiceLevelsForOwner(owner.getId(), Boolean.parseBoolean(exempt));
     }
 
     /**
@@ -1250,7 +1250,7 @@ public class OwnerResource {
                         dto.getName(), ownerKey));
         }
 
-        serviceLevelValidator.validate(owner, dto.getServiceLevel());
+        serviceLevelValidator.validate(owner.getId(), dto.getServiceLevel());
 
         // Creating and populating the ActivationKey before the content override validation because the
         // contentOverrideDTOs need to be converted to model content overrides before validation anyway.
@@ -1490,7 +1490,7 @@ public class OwnerResource {
                     consumerUuid));
             }
 
-            if (!c.getOwner().getId().equals(owner.getId())) {
+            if (!c.getOwnerId().equals(owner.getId())) {
                 throw new BadRequestException(
                     "Consumer specified does not belong to owner on path");
             }
@@ -1533,7 +1533,7 @@ public class OwnerResource {
         }
 
         Page<List<Pool>> page = poolManager.listAvailableEntitlementPools(
-            c, key, owner, productId, subscriptionId, activeOn, listAll, poolFilters, pageRequest,
+            c, key, owner.getId(), productId, subscriptionId, activeOn, listAll, poolFilters, pageRequest,
         addFuture, onlyFuture, after);
         List<Pool> poolList = page.getPageData();
         calculatedAttributesUtil.setCalculatedAttributes(poolList, activeOn);

@@ -305,14 +305,14 @@ public class EntitlementRules implements Enforcer {
             return null;
         }
 
-        List<Owner> potentialOwners = new ArrayList<>(Arrays.asList(consumer.getOwner()));
+        List<String> potentialOwners = new ArrayList<>(Arrays.asList(consumer.getOwnerId()));
         for (Pool p : pools) {
             if (p.isCreatedByShare()) {
-                potentialOwners.add(p.getSourceEntitlement().getOwner());
+                potentialOwners.add(p.getSourceEntitlement().getOwner().getId());
             }
         }
 
-        Consumer host = consumerCurator.getHost(consumer, potentialOwners.toArray(new Owner[] {}));
+        Consumer host = consumerCurator.getHost(consumer, potentialOwners.toArray(new String[] {}));
         return host;
     }
 
@@ -651,6 +651,7 @@ public class EntitlementRules implements Enforcer {
         Map<String, Entitlement> entitlementMap) {
         log.debug("Running post-bind share create");
 
+        // Vritant might as well, since we need to create a share
         Owner sharingOwner = c.getOwner();
         Owner recipient = ownerCurator.lookupByKey(c.getRecipientOwnerKey());
         List<Pool> sharedPoolsToCreate = new ArrayList<>();
@@ -932,7 +933,7 @@ public class EntitlementRules implements Enforcer {
         for (Entitlement entitlement : entitlements) {
             subscriptionIds.add(entitlement.getPool().getSubscriptionId());
         }
-        List<Pool> subscriptionPools = poolManager.lookupBySubscriptionIds(c.getOwner(), subscriptionIds);
+        List<Pool> subscriptionPools = poolManager.lookupBySubscriptionIds(c.getOwnerId(), subscriptionIds);
         Map<String, List<Pool>> subscriptionPoolMap = new HashMap<>();
         for (Pool pool : subscriptionPools) {
             if (!subscriptionPoolMap.containsKey(pool.getSubscriptionId())) {

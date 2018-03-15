@@ -188,7 +188,7 @@ public class ConsumerBindUtil {
     private boolean handleActivationKeyServiceLevel(Consumer consumer, String level, Owner owner) {
         if (!StringUtils.isBlank(level)) {
             try {
-                serviceLevelValidator.validate(owner, level);
+                serviceLevelValidator.validate(owner.getId(), level);
                 consumer.setServiceLevel(level);
                 return true;
             }
@@ -217,8 +217,8 @@ public class ConsumerBindUtil {
         return quantity;
     }
 
-    public void validateServiceLevel(Owner owner, String serviceLevel) {
-        serviceLevelValidator.validate(owner, serviceLevel);
+    public void validateServiceLevel(String ownerId, String serviceLevel) {
+        serviceLevelValidator.validate(ownerId, serviceLevel);
     }
 
 }

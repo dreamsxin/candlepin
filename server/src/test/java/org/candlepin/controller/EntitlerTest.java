@@ -577,7 +577,7 @@ public class EntitlerTest {
         devSystem.setFact("dev_sku", p.getId());
 
         when(config.getBoolean(eq(ConfigProperties.STANDALONE))).thenReturn(false);
-        when(poolCurator.hasActiveEntitlementPools(eq(owner), any(Date.class))).thenReturn(true);
+        when(poolCurator.hasActiveEntitlementPools(eq(owner.getId()), any(Date.class))).thenReturn(true);
         when(productAdapter.getProductsByIds(eq(owner), any(List.class))).thenReturn(devProdDTOs);
 
         this.mockProducts(owner, p);
@@ -608,7 +608,7 @@ public class EntitlerTest {
         devSystem.addInstalledProduct(new ConsumerInstalledProduct(p));
 
         when(config.getBoolean(eq(ConfigProperties.STANDALONE))).thenReturn(true);
-        when(poolCurator.hasActiveEntitlementPools(eq(owner), any(Date.class))).thenReturn(true);
+        when(poolCurator.hasActiveEntitlementPools(eq(owner.getId()), any(Date.class))).thenReturn(true);
         when(productAdapter.getProductsByIds(any(Owner.class), any(List.class))).thenReturn(devProdDTOs);
         when(ownerProductCurator.getProductById(eq(owner), eq(p.getId()))).thenReturn(p);
 
@@ -628,7 +628,7 @@ public class EntitlerTest {
         devSystem.addInstalledProduct(new ConsumerInstalledProduct(p));
 
         when(config.getBoolean(eq(ConfigProperties.STANDALONE))).thenReturn(false);
-        when(poolCurator.hasActiveEntitlementPools(eq(owner), any(Date.class))).thenReturn(false);
+        when(poolCurator.hasActiveEntitlementPools(eq(owner.getId()), any(Date.class))).thenReturn(false);
         when(productAdapter.getProductsByIds(any(Owner.class), any(List.class))).thenReturn(devProdDTOs);
         when(ownerProductCurator.getProductById(eq(owner), eq(p.getId()))).thenReturn(p);
 
@@ -666,7 +666,7 @@ public class EntitlerTest {
         devSystem.addInstalledProduct(new ConsumerInstalledProduct(ip));
 
         when(config.getBoolean(eq(ConfigProperties.STANDALONE))).thenReturn(false);
-        when(poolCurator.hasActiveEntitlementPools(eq(owner), any(Date.class))).thenReturn(true);
+        when(poolCurator.hasActiveEntitlementPools(eq(owner.getId()), any(Date.class))).thenReturn(true);
         when(productAdapter.getProductsByIds(any(Owner.class), any(List.class))).thenReturn(devProdDTOs);
         when(ownerProductCurator.getProductById(eq(owner), eq(p.getId()))).thenReturn(p);
         when(ownerProductCurator.getProductById(eq(owner), eq(ip.getId()))).thenReturn(ip);
@@ -706,7 +706,7 @@ public class EntitlerTest {
         devSystem.addInstalledProduct(new ConsumerInstalledProduct(ip2));
 
         when(config.getBoolean(eq(ConfigProperties.STANDALONE))).thenReturn(false);
-        when(poolCurator.hasActiveEntitlementPools(eq(owner), any(Date.class))).thenReturn(true);
+        when(poolCurator.hasActiveEntitlementPools(eq(owner.getId()), any(Date.class))).thenReturn(true);
         when(productAdapter.getProductsByIds(any(Owner.class), any(List.class))).thenReturn(devProdDTOs);
 
         this.mockProducts(owner, p, ip1, ip2);

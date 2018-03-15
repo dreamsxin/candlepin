@@ -254,6 +254,7 @@ public class InstalledProductStatusCalculatorTest {
         //test that the enricher does not set the arch and version when they are populated
         // in the CIP
         Owner owner = TestUtil.createOwner();
+        owner.setId(TestUtil.randomString());
         Product product = TestUtil.createProduct("p1", "product1");
         Consumer consumer = this.mockConsumer(owner, product);
 
@@ -938,7 +939,7 @@ public class InstalledProductStatusCalculatorTest {
 
                 return cqmock;
             }
-        }).when(this.ownerProductCurator).getProductsByIds(eq(owner), anyCollection());
+        }).when(this.ownerProductCurator).getProductsByIds(eq(owner.getId()), anyCollection());
     }
 
     private ConsumerInstalledProduct getInstalledProduct(Consumer consumer, Product product) {

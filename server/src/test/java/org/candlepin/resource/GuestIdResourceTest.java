@@ -170,7 +170,7 @@ public class GuestIdResourceTest {
         GuestId guestEnt = new GuestId();
         guestEnt.setId("some_id");
         guestIdResource.updateGuest(consumer.getUuid(), guest.getGuestId(), guest);
-        when(guestIdCurator.findByGuestIdAndOrg(anyString(), any(Owner.class))).thenReturn(guestEnt);
+        when(guestIdCurator.findByGuestIdAndOrg(anyString(), any(String.class))).thenReturn(guestEnt);
         ArgumentCaptor<GuestId> guestCaptor = ArgumentCaptor.forClass(GuestId.class);
         Mockito.verify(guestIdCurator, Mockito.times(1)).merge(guestCaptor.capture());
         GuestId result = guestCaptor.getValue();
@@ -221,7 +221,7 @@ public class GuestIdResourceTest {
         GuestIdDTO guest = new GuestIdDTO("guest-id");
 
         when(guestIdCurator.findByGuestIdAndOrg(
-            eq(guest.getGuestId()), eq(owner))).thenReturn(originalGuest);
+            eq(guest.getGuestId()), eq(owner.getId()))).thenReturn(originalGuest);
         when(consumerCurator.findByVirtUuid(eq(guest.getGuestId()),
             eq(owner.getId()))).thenReturn(guestConsumer);
 

@@ -533,6 +533,7 @@ public class Exporter {
 
             // Real products have a numeric id.
             if (StringUtils.isNumeric(product.getId())) {
+                //Vritant adapters are external end points... makes sense to keep em objects
                 ProductCertificate cert = productAdapter.getProductCertificate(
                     consumer.getOwner(), product.getId()
                 );

@@ -351,6 +351,7 @@ public class JobCuratorTest extends DatabaseTestFixture {
     @Test
     public void findByUserFiltersByOwnerAccessAndUUIDWhenRequestedByConsumer() {
         Owner owner = new Owner("testowner");
+        owner.setId(TestUtil.randomString());
         Consumer consumer = TestUtil.createConsumer(owner);
 
         JobStatus job = newJobStatus().principalName(consumer.getUuid()).owner(owner.getKey()).create();

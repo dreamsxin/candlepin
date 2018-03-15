@@ -1030,9 +1030,9 @@ public class CandlepinPoolManager implements PoolManager {
     }
 
     @Override
-    public List<Pool> lookupBySubscriptionIds(Owner owner, Collection<String> subscriptionIds) {
+    public List<Pool> lookupBySubscriptionIds(String ownerId, Collection<String> subscriptionIds) {
         if (CollectionUtils.isNotEmpty(subscriptionIds)) {
-            return this.poolCurator.lookupBySubscriptionIds(owner, subscriptionIds);
+            return this.poolCurator.lookupBySubscriptionIds(ownerId, subscriptionIds);
         }
 
         return new ArrayList<>();
@@ -1105,7 +1105,7 @@ public class CandlepinPoolManager implements PoolManager {
         String[] productIds = data.getProductIds();
         Collection<String> fromPools = data.getPossiblePools();
         Date entitleDate = data.getOnDate();
-        Owner owner = consumer.getOwner();
+        String ownerId = consumer.getOwnerId();
 
         List<PoolQuantity> bestPools = new ArrayList<>();
         // fromPools will be empty if the dev pool was already created.
@@ -1115,7 +1115,7 @@ public class CandlepinPoolManager implements PoolManager {
             bestPools.add(pq);
         }
         else {
-            bestPools = getBestPools(consumer, productIds, entitleDate, owner, null, fromPools);
+            bestPools = getBestPools(consumer, productIds, entitleDate, ownerId, null, fromPools);
         }
 
         if (bestPools == null) {
@@ -1146,18 +1146,16 @@ public class CandlepinPoolManager implements PoolManager {
 
         host = consumerCurator.lockAndLoad(host);
         List<Entitlement> entitlements = new LinkedList<>();
-        if (!host.getOwner().equals(guest.getOwner())) {
+        if (!host.getOwnerId().equals(guest.getOwnerId())) {
             log.debug("Host {} and guest {} have different owners", host.getUuid(), guest.getUuid());
             return entitlements;
         }
-        Owner owner = host.getOwner();
-
         // Use the current date if one wasn't provided:
         if (entitleDate == null) {
             entitleDate = new Date();
         }
 
-        List<PoolQuantity> bestPools = getBestPoolsForHost(guest, host, entitleDate, owner, null,
+        List<PoolQuantity> bestPools = getBestPoolsForHost(guest, host, entitleDate, host.getOwnerId(), null,
             possiblePools);
 
         if (bestPools == null) {
@@ -1185,7 +1183,7 @@ public class CandlepinPoolManager implements PoolManager {
     @Override
     @SuppressWarnings("checkstyle:methodlength")
     public List<PoolQuantity> getBestPoolsForHost(Consumer guest, Consumer host, Date entitleDate,
-        Owner owner, String serviceLevelOverride, Collection<String> fromPools)
+        String ownerId, String serviceLevelOverride, Collection<String> fromPools)
         throws EntitlementRefusedException {
 
         Map<String, ValidationResult> failedResults = new HashMap<>();
@@ -1204,13 +1202,13 @@ public class CandlepinPoolManager implements PoolManager {
         PoolFilterBuilder poolFilter = new PoolFilterBuilder();
         poolFilter.addIdFilters(fromPools);
         List<Pool> allOwnerPools = this.listAvailableEntitlementPools(
-            host, null, owner, null, null, activePoolDate, false,
+            host, null, ownerId, null, null, activePoolDate, false,
             poolFilter, null, false, false, null).getPageData();
         log.debug("Found {} total pools in org.", allOwnerPools.size());
         logPools(allOwnerPools);
 
         List<Pool> allOwnerPoolsForGuest = this.listAvailableEntitlementPools(
-            guest, null, owner, null, null, activePoolDate,
+            guest, null, ownerId, null, null, activePoolDate,
             false, poolFilter,
             null, false, false, null).getPageData();
         log.debug("Found {} total pools already available for guest", allOwnerPoolsForGuest.size());
@@ -1324,7 +1322,7 @@ public class CandlepinPoolManager implements PoolManager {
         logPools(filteredPools);
         List<PoolQuantity> enforced = autobindRules.selectBestPools(host,
             productIds, filteredPools, hostCompliance, serviceLevelOverride,
-            poolCurator.retrieveServiceLevelsForOwner(owner, true), true);
+            poolCurator.retrieveServiceLevelsForOwner(ownerId, true), true);
 
         if (log.isDebugEnabled()) {
             log.debug("Host selectBestPools returned {} pools: ", enforced.size());
@@ -1396,7 +1394,7 @@ public class CandlepinPoolManager implements PoolManager {
 
     @Override
     public List<PoolQuantity> getBestPools(Consumer consumer,
-        String[] productIds, Date entitleDate, Owner owner,
+        String[] productIds, Date entitleDate, String ownerId,
         String serviceLevelOverride, Collection<String> fromPools)
         throws EntitlementRefusedException {
 
@@ -1410,7 +1408,7 @@ public class CandlepinPoolManager implements PoolManager {
         PoolFilterBuilder poolFilter = new PoolFilterBuilder();
         poolFilter.addIdFilters(fromPools);
         List<Pool> allOwnerPools = this.listAvailableEntitlementPools(
-            consumer, null, owner, null, null, activePoolDate, false,
+            consumer, null, ownerId, null, null, activePoolDate, false,
             poolFilter, null, false, false, null).getPageData();
         List<Pool> filteredPools = new LinkedList<>();
 
@@ -1490,7 +1488,7 @@ public class CandlepinPoolManager implements PoolManager {
 
         List<PoolQuantity> enforced = autobindRules.selectBestPools(consumer,
             productIds, filteredPools, compliance, serviceLevelOverride,
-            poolCurator.retrieveServiceLevelsForOwner(owner, true), false);
+            poolCurator.retrieveServiceLevelsForOwner(ownerId, true), false);
         // Sort the resulting pools to avoid deadlocks
         Collections.sort(enforced);
         return enforced;
@@ -1589,7 +1587,7 @@ public class CandlepinPoolManager implements PoolManager {
         enforcer.postEntitlement(this, consumer, entMap, new ArrayList<>(), true, poolQuantityMap);
 
         // we might have changed the bonus pool quantities, revoke ents if needed.
-        checkBonusPoolQuantities(consumer.getOwner(), entMap);
+        checkBonusPoolQuantities(consumer.getOwnerId(), entMap);
 
         // if shared ents, update shared pool quantity
         if (consumer.isShare()) {
@@ -1661,7 +1659,7 @@ public class CandlepinPoolManager implements PoolManager {
      * @param owner
      * @param entitlements
      */
-    public void checkBonusPoolQuantities(Owner owner,
+    public void checkBonusPoolQuantities(String ownerId,
         Map<String, Entitlement> entitlements) {
 
         Set<String> excludePoolIds = new HashSet<>();
@@ -1672,7 +1670,7 @@ public class CandlepinPoolManager implements PoolManager {
             excludePoolIds.add(pool.getId());
         }
 
-        List<Pool> overConsumedPools = poolCurator.lookupOversubscribedBySubscriptionIds(owner,
+        List<Pool> overConsumedPools = poolCurator.lookupOversubscribedBySubscriptionIds(ownerId,
             subEntitlementMap);
 
         List<Pool> derivedPools = new ArrayList<>();
@@ -2405,7 +2403,7 @@ public class CandlepinPoolManager implements PoolManager {
 
     @Override
     public Page<List<Pool>> listAvailableEntitlementPools(Consumer consumer,
-        ActivationKey key, Owner owner, String productId, String subscriptionId, Date activeOn,
+        ActivationKey key, String ownerId, String productId, String subscriptionId, Date activeOn,
         boolean includeWarnings, PoolFilterBuilder filters,
         PageRequest pageRequest, boolean addFuture, boolean onlyFuture, Date after) {
 
@@ -2417,7 +2415,7 @@ public class CandlepinPoolManager implements PoolManager {
         }
 
         Page<List<Pool>> page = this.poolCurator.listAvailableEntitlementPools(consumer,
-            owner, productId, subscriptionId, activeOn, filters, pageRequest, postFilter,
+            ownerId, productId, subscriptionId, activeOn, filters, pageRequest, postFilter,
             addFuture, onlyFuture, after);
 
         if (consumer == null && key == null) {
@@ -2503,8 +2501,8 @@ public class CandlepinPoolManager implements PoolManager {
     }
 
     @Override
-    public Set<String> retrieveServiceLevelsForOwner(Owner owner, boolean exempt) {
-        return poolCurator.retrieveServiceLevelsForOwner(owner, exempt);
+    public Set<String> retrieveServiceLevelsForOwner(String ownerId, boolean exempt) {
+        return poolCurator.retrieveServiceLevelsForOwner(ownerId, exempt);
     }
 
     @Override

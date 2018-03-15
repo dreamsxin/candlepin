@@ -17,14 +17,12 @@ package org.candlepin.pinsetter.tasks;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.candlepin.controller.ManifestManager;
 import org.candlepin.model.Consumer;
 import org.candlepin.pinsetter.core.model.JobStatus;
 import org.candlepin.sync.ExportResult;
 import org.candlepin.test.TestUtil;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +31,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -64,7 +65,7 @@ public class ExportJobTest extends BaseJobTest {
         JobDetail detail = job.scheduleExport(distributor, cdnLabel, webappPrefix, apiUrl, extData);
         JobDataMap dataMap = detail.getJobDataMap();
 
-        assertEquals(dataMap.get(JobStatus.OWNER_ID), distributor.getOwner().getKey());
+        assertEquals(dataMap.get(JobStatus.OWNER_ID), distributor.getOwner().getId());
         assertEquals(dataMap.get(JobStatus.TARGET_ID), distributor.getUuid());
         assertEquals(dataMap.get(JobStatus.TARGET_TYPE), JobStatus.TargetType.CONSUMER);
         assertEquals(dataMap.get(ExportJob.CDN_LABEL), cdnLabel);

@@ -187,6 +187,7 @@ public class DefaultEntitlementCertServiceAdapter extends BaseEntitlementCertSer
         }
 
         X509Certificate x509Cert =  this.pki.createX509Certificate(
+            // Vritant used in cert
             createDN(ent, consumer.getOwner()), extensions, byteExtensions, startDate,
             endDate, keyPair, serialNumber, null);
         return x509Cert;
@@ -230,6 +231,7 @@ public class DefaultEntitlementCertServiceAdapter extends BaseEntitlementCertSer
         throws IOException {
         String contentPrefix = null;
         if (useContentPrefix) {
+            // Vritant Makes sense
             contentPrefix = consumer.getOwner().getContentPrefix();
             Environment env = consumer.getEnvironment();
             if (contentPrefix != null && !contentPrefix.equals("")) {
