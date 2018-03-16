@@ -87,16 +87,19 @@ public class EventFactoryTest {
         ComplianceReason reason2 = new ComplianceReason();
         reason2.setKey(ComplianceReason.ReasonKeys.ARCHITECTURE);
         reason2.setMessage("Supports architecture ppc64 but the system is x86_64.");
-        reason2.setAttributes(ImmutableMap.of(ComplianceReason.Attributes.MARKETING_NAME, "Awesome Middleware"));
+        reason2.setAttributes(ImmutableMap.of(
+            ComplianceReason.Attributes.MARKETING_NAME,
+            "Awesome Middleware"
+        ));
 
         when(status.getReasons()).thenReturn(ImmutableSet.of(reason1, reason2));
 
         String expectedEventData = "{\"reasons\":[" +
-                "{\"productName\":\"Awesome OS\"," +
-                "\"message\":\"Only supports 2 of 12 sockets.\"}," +
-                "{\"productName\":\"Awesome Middleware\"," +
-                "\"message\":\"Supports architecture ppc64 but the system is x86_64.\"}]," +
-                "\"consumer_uuid\":\"48b09f4e-f18c-4765-9c41-9aed6f122739\",\"status\":\"invalid\"}";
+            "{\"productName\":\"Awesome OS\"," +
+            "\"message\":\"Only supports 2 of 12 sockets.\"}," +
+            "{\"productName\":\"Awesome Middleware\"," +
+            "\"message\":\"Supports architecture ppc64 but the system is x86_64.\"}]," +
+            "\"consumer_uuid\":\"48b09f4e-f18c-4765-9c41-9aed6f122739\",\"status\":\"invalid\"}";
         Event event = eventFactory.complianceCreated(consumer, status);
         assertEquals(expectedEventData, event.getEventData());
     }

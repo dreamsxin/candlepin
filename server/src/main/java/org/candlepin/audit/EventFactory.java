@@ -222,8 +222,8 @@ public class EventFactory {
         List<Map<String, String>> reasons = new ArrayList<>(compliance.getReasons().size());
         for (ComplianceReason reason : compliance.getReasons()) {
             reasons.add(ImmutableMap.of(
-                    "productName", reason.getAttributes().get(ComplianceReason.Attributes.MARKETING_NAME),
-                    "message", reason.getMessage()
+                "productName", reason.getAttributes().get(ComplianceReason.Attributes.MARKETING_NAME),
+                "message", reason.getMessage()
             ));
         }
         eventData.put("reasons", reasons);
